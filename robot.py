@@ -17,12 +17,12 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
 # Robot parameters
-ROBOT_RADIUS = 30
+ROBOT_RADIUS = 20
 ROBOT_SPEED = 5
 
 # Rod parameters
 ROD_LENGTH = 100
-ROD_THICKNESS = 5
+ROD_THICKNESS = 10
 
 # Wall parameters
 WALL_WIDTH = 20
@@ -48,7 +48,7 @@ class Rod:
         self.moving_robot = robot1
 
     def draw(self):
-        pygame.draw.line(screen, BLACK, (self.robot1.x, self.robot1.y), (self.robot2.x, self.robot2.y), 5)
+        pygame.draw.line(screen, BLACK, (self.robot1.x, self.robot1.y), (self.robot2.x, self.robot2.y), ROD_THICKNESS)
 
     def synchronize(self):
         dx = self.robot2.x - self.robot1.x
