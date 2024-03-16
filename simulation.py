@@ -1,16 +1,16 @@
 import pygame
 import math
 
-
-from constants import  *
+from constants import *
 from robot import Robot
 from rod import Rod
 from wall import Wall
 from funtions import simulate_action
+
+reward = 0
 # Initialize Pygame
 pygame.init()
 pygame.display.set_caption("Synchronized Robot Movement")
-
 
 # Create walls
 wall1 = Wall(100, 100, 20, 400)
@@ -36,13 +36,11 @@ while running:
             running = False
 
     keys = pygame.key.get_pressed()
-    [dx1, dy1, dx2, dy2, rod] = simulate_action(keys,robot1,robot2 ,rod)
+    [dx1, dy1, dx2, dy2, rod] = simulate_action(keys, robot1, robot2, rod)
 
     # Move the robots
     robot1.move(dx1, dy1)
     robot2.move(dx2, dy2)
-
-
 
     # Synchronize movement of rod with robots
     rod.synchronize()
@@ -60,7 +58,7 @@ while running:
     door_width = 100
     door_height = 20
     door_x = (WIDTH - door_width) // 2  # Center the door horizontally
-    door_y = HEIGHT - 120 # Place the door at the bottom wall
+    door_y = HEIGHT - 120  # Place the door at the bottom wall
 
     # Create the door rectangle
     bottom_wall_opening = pygame.Rect(door_x, door_y, door_width, door_height)
@@ -80,10 +78,18 @@ while running:
     for wall in [wall1, wall2, wall3, wall4]:
         if wall.rect.colliderect(rod_rect) and not door_rect.colliderect(rod_rect):
             # If there's a collision with any wall but not the door, adjust both robots' positions
+            reward -= 100
             robot1.x -= dx1
             robot1.y -= dy1
             robot2.x -= dx2
             robot2.y -= dy2
+        else:
+            reward -= 0.01
+
+    if rod.is_outside_room():
+        reward += 400
+        print(reward)
+        pygame.quit()
 
     pygame.display.flip()
     clock.tick(60)

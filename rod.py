@@ -3,6 +3,7 @@ import math
 from constants import  BLACK
 from constants import  ROD_LENGTH , ROD_THICKNESS
 from constants import  screen
+from constants import WIDTH, HEIGHT
 
 class Rod:
     def __init__(self, robot1, robot2):
@@ -36,3 +37,14 @@ class Rod:
                 new_robot1_x = self.robot2.x - adjustment_x
                 new_robot1_y = self.robot2.y - adjustment_y
                 self.robot1.x, self.robot1.y = new_robot1_x, new_robot1_y
+
+    def is_outside_room(self):
+        rod_center_x = (self.robot1.x + self.robot2.x) / 2
+        rod_center_y = (self.robot1.y + self.robot2.y) / 2
+
+        # Check if the rod's center lies outside the room boundaries
+        if (rod_center_x < 0 or rod_center_x > WIDTH or
+                rod_center_y < 0 or rod_center_y > HEIGHT):
+            return True  # Rod is outside the room
+        else:
+            return False  # Rod is inside the room
