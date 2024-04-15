@@ -1,6 +1,6 @@
 import pygame
 import math
-
+from dqn import *
 from constants import *
 from robot import Robot
 from rod import Rod
@@ -25,11 +25,13 @@ robot2 = Robot(600, 300, GREEN)
 # Initialize rod
 rod = Rod(robot1, robot2)
 
-#training
+train(robot1, robot2, rod)
 
 # Main loop
 clock = pygame.time.Clock()
 running = True
+
+
 while running:
     screen.fill(WHITE)
 
