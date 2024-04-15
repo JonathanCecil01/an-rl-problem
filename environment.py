@@ -2,8 +2,10 @@ from constants import ROBOT_SPEED
 from wall import  Wall
 import pygame
 from constants import HEIGHT , WIDTH, ROD_LENGTH
+import torch
 
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 #defining the wall
 wall1 = Wall(100, 100, 20, 400)
 wall2 = Wall(100, 100, 600, 20)
@@ -30,7 +32,7 @@ class Environment:
         self.robot2 = robot2
         self.rod_x = None
         self.rod_y = None
-        self.actions = ['left', 'right', 'up', 'down']
+        self.actions = [0, 1, 2, 3]
         self.possible_agents = ['robot1', 'robot2']
 
     #returns a random start state for the robot
@@ -50,10 +52,14 @@ class Environment:
         }
 
         return observations
+    
 
     #returns the list of all possible actions
     def action_space(self):
         return self.actions
+
+    def get_reward(self, state):
+        return 1
 
     #returns the next step, reward, if End state flag 
     def step(self,action,agent):
@@ -61,16 +67,16 @@ class Environment:
         dx2, dy2 = 0, 0
 
         if agent == 'robot1':
-            if action == 'left':
+            if action == 0:#'left':
                 self.robot1.x = self.robot1.x - ROBOT_SPEED
                 dx1 = -ROBOT_SPEED
-            if action == 'right':
+            if action == 1:#'right':
                 self.robot1.x  =  self.robot1.x + ROBOT_SPEED
                 dx1 = ROBOT_SPEED
-            if action == 'up':
+            if action == 2:#'up':
                 self.robot1.y = self.robot1.y -ROBOT_SPEED
                 dy1 = -ROBOT_SPEED
-            if action == 'down':
+            if action == 3:#'down':
                 self.robot1.y = self.robot1.y + ROBOT_SPEED
                 dy1 = ROBOT_SPEED
         if agent == 'robot2':
@@ -90,6 +96,8 @@ class Environment:
         self.rod_x = (self.robot1.x + self.robot2.x) / 2
         self.rod_y =(self.robot1.y + self.robot2.y) / 2
         next_state = [(self.robot1.x , self.robot1.y),ROBOT_SPEED ,(self.rod_x , self.rod_y) , ROBOT_SPEED , (self.robot2.x , self.robot2.y ), ROBOT_SPEED]
+        next_state = [next_state[0][0], next_state[0][1], next_state[1], next_state[2][0], next_state[2][1], next_state[3], next_state[4][0], next_state[4][1]]
+        next_state = torch.tensor(next_state, dtype=torch.float32, device=device).unsqueeze(0)
         reward = self.get_reward(next_state)
         self.rod.synchronize()
 
@@ -120,7 +128,6 @@ class Environment:
 
 
         return next_state, reward, isEnd
-
 
 
 

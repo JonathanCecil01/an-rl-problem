@@ -66,16 +66,17 @@ robot2 = Robot(600, 300, GREEN)
 # Initialize rod
 rod = Rod(robot1, robot2)    
 n_actions = 4
-env = Environment(robot1, rod)
-state, info = env.reset()
-n_observations = len(state)
+env = Environment(robot1, rod, robot2)
+state = env.reset()
+n_observations = 8
 policy_net = DQN(n_observations, n_actions).to(device)
 target_net = DQN(n_observations, n_actions).to(device)
 target_net.load_state_dict(policy_net.state_dict())
-
 optimizer = optim.AdamW(policy_net.parameters(), lr=LR, amsgrad=True)
 memory = ReplayMemory(10000)
 steps_done = 0
+episode_durations = []
+
 def select_action(state):
     global steps_done
     sample = random.random()
@@ -84,9 +85,11 @@ def select_action(state):
     steps_done += 1
     if sample > eps_threshold:
         with torch.no_grad():
+            state = state.squeeze(0)
             return policy_net(state).max(1).indices.view(1, 1)
     else:
-        return torch.tensor([[env.action_space.sample()]], device=device, dtype=torch.long)
+        return torch.tensor([[random.choice(env.action_space())]], device=device, dtype=torch.long)
+        #return torch.tensor([[env.action_space.sample()]], device=device, dtype=torch.long)
 
 def plot_durations(show_result=False):
     plt.figure(1)
@@ -115,14 +118,13 @@ def plot_durations(show_result=False):
     plt.gcf()
 
     
-episode_durations = []
+
 
 def optimize_model():
     if len(memory) < BATCH_SIZE:
         return
     transitions = memory.sample(BATCH_SIZE)
     batch = Transition(*zip(*transitions))
-
     # Compute a mask of non-final states and concatenate the batch elements
     # (a final state would've been the one after which simulation ended)
     non_final_mask = torch.tensor(tuple(map(lambda s: s is not None,
@@ -165,15 +167,19 @@ if torch.cuda.is_available():
 else:
     num_episodes = 50
 
+r = 'robot1'
 for i_episode in range(num_episodes):
     # Initialize the environment and get its state
-    state, info = env.reset()
+    state = env.reset()
+    #state = torch.tensor(state, dtype=torch.float32, device=device).unsqueeze(0)
+    state = state[r]
+    state = [state[0][0], state[0][1], state[1], state[2][0], state[2][1], state[3], state[4][0], state[4][1]]
     state = torch.tensor(state, dtype=torch.float32, device=device).unsqueeze(0)
     for t in count():
         action = select_action(state)
-        observation, reward, terminated, truncated, _ = env.step(action.item())
+        observation, reward, terminated = env.step(action.item(), 'robot1')
         reward = torch.tensor([reward], device=device)
-        done = terminated or truncated
+        done = terminated
         if terminated:
             next_state = None
         else:
@@ -198,13 +204,13 @@ for i_episode in range(num_episodes):
 
         if done:
             episode_durations.append(t + 1)
-            plot_durations()
+            #plot_durations()
             break
 
-print('Complete')
-plot_durations(show_result=True)
-plt.ioff()
-plt.show()
+# print('Complete')
+# plot_durations(show_result=True)
+# plt.ioff()
+# plt.show()
 
 
 
