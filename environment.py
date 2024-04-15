@@ -80,16 +80,16 @@ class Environment:
                 self.robot1.y = self.robot1.y + ROBOT_SPEED
                 dy1 = ROBOT_SPEED
         if agent == 'robot2':
-            if action == 'left':
+            if action == 0:
                 self.robot2.x = self.robot2.x - ROBOT_SPEED
                 dx2 = -ROBOT_SPEED
-            if action == 'right':
+            if action == 1:
                 self.robot2.x  =  self.robot2.x + ROBOT_SPEED
                 dx2 = ROBOT_SPEED
-            if action == 'up':
+            if action == 2:
                 self.robot2.y = self.robot2.y -ROBOT_SPEED
                 dy2 = -ROBOT_SPEED
-            if action == 'down':
+            if action == 3:
                 self.robot2.y = self.robot2.y + ROBOT_SPEED
                 dy2 = ROBOT_SPEED
 
