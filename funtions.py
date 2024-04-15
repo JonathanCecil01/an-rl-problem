@@ -1,7 +1,6 @@
 import pygame
 ROBOT_SPEED = 5
 
-
 def simulate_action(keys_pressed, robot1, robot2, rod):
     dx1, dy1 = 0, 0
     dx2, dy2 = 0, 0
