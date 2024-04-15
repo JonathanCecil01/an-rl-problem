@@ -32,4 +32,3 @@ def simulate_action(keys_pressed, robot1, robot2, rod):
         dy2 = ROBOT_SPEED
 
     return [dx1, dy1, dx2, dy2, rod]
-

@@ -25,6 +25,8 @@ robot2 = Robot(600, 300, GREEN)
 # Initialize rod
 rod = Rod(robot1, robot2)
 
+#training
+
 # Main loop
 clock = pygame.time.Clock()
 running = True
