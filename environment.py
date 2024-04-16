@@ -44,7 +44,7 @@ class Environment:
 
         self.rod_x = (self.robot1.x + self.robot2.x) / 2
         self.rod_y = (self.robot1.y + self.robot2.y) / 2
-
+        self.rod.synchronize()
         observations = {
             a:((self.robot1.x , self.robot2.y) , ROBOT_SPEED ,
                (self.rod_x ,self.rod_y ) , ROBOT_SPEED ,
@@ -96,7 +96,7 @@ class Environment:
         self.rod_x = (self.robot1.x + self.robot2.x) / 2
         self.rod_y =(self.robot1.y + self.robot2.y) / 2
         next_state = [(self.robot1.x , self.robot1.y),ROBOT_SPEED ,(self.rod_x , self.rod_y) , ROBOT_SPEED , (self.robot2.x , self.robot2.y ), ROBOT_SPEED]
-        next_state = [next_state[0][0], next_state[0][1], next_state[1], next_state[2][0], next_state[2][1], next_state[3], next_state[4][0], next_state[4][1]]
+        next_state = [next_state[0][0], next_state[0][1], next_state[1], next_state[2][0], next_state[2][1], next_state[3], next_state[4][0], next_state[4][1], next_state[5]]
         next_state = torch.tensor(next_state, dtype=torch.float32, device=device).unsqueeze(0)
         #reward = self.get_reward(next_state)
         self.rod.synchronize()
@@ -120,7 +120,7 @@ class Environment:
                 self.robot2.x -= dx2
                 self.robot2.y -= dy2
             else:
-                reward =  self.get_reward(next_state)
+                reward =  -0.1#self.get_reward(next_state)
 
         isEnd = self.rod.is_outside_room()
         if isEnd :

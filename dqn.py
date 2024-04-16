@@ -147,7 +147,7 @@ def optimize_model(memory, policy_net, target_net, optimizer):
     torch.nn.utils.clip_grad_value_(policy_net.parameters(), 100)
     optimizer.step()
 
-
+#if __name__ == 'main':
 def train(robot1, robot2, rod):
     #Get the Following by creating an environment
     # robot1 = Robot(200, 300, RED)
@@ -158,7 +158,7 @@ def train(robot1, robot2, rod):
     n_actions = 4
     env = Environment(robot1, rod, robot2)
     state = env.reset()
-    n_observations = 8
+    n_observations = 9
     policy_net = DQN(n_observations, n_actions).to(device)
     target_net = DQN(n_observations, n_actions).to(device)
     target_net.load_state_dict(policy_net.state_dict())
@@ -169,7 +169,7 @@ def train(robot1, robot2, rod):
     if torch.cuda.is_available():
         num_episodes = 600
     else:
-        num_episodes = 10
+        num_episodes = 50
 
     for i_episode in range(num_episodes):
         print(i_episode)
@@ -179,10 +179,10 @@ def train(robot1, robot2, rod):
         # state = state[r]
         # state = [state[0][0], state[0][1], state[1], state[2][0], state[2][1], state[3], state[4][0], state[4][1]]
         # state = torch.tensor(state, dtype=torch.float32, device=device).unsqueeze(0)
-        for t in count():
+        for t in range(100):
             for r in robot_states:
                 state = robot_states[r]
-                state = [state[0][0], state[0][1], state[1], state[2][0], state[2][1], state[3], state[4][0], state[4][1]]
+                state = [state[0][0], state[0][1], state[1], state[2][0], state[2][1], state[3], state[4][0], state[4][1], state[5]]
                 state = torch.tensor(state, dtype=torch.float32, device=device).unsqueeze(0)
             #print(state)
                 action = select_action(state, env, policy_net)
@@ -199,6 +199,7 @@ def train(robot1, robot2, rod):
 
             # Move to the next state
             state = next_state
+            #print(state)
             # Perform one step of the optimization (on the policy network)
             optimize_model(memory, policy_net, target_net, optimizer)
 
@@ -212,13 +213,15 @@ def train(robot1, robot2, rod):
 
             if done:
                 episode_durations.append(t + 1)
-                plot_durations()
-                break
-
-    print('Complete')
-    plot_durations(show_result=True)
-    plt.ioff()
-    plt.show()
+                #plot_durations()
+                return policy_net
+                #break
+    #dummy = env.reset()
+    return policy_net           
+    # print('Complete')
+    # plot_durations(show_result=True)
+    # plt.ioff()
+    # plt.show()
 
 
 
